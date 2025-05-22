@@ -1,13 +1,45 @@
+"use client";
 import Link from "next/link"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { GovBrHeader } from "@/components/gov-br-header"
 import { GovBrFooter } from "@/components/gov-br-footer"
+import { PixPayment } from "@/components/PixPayment"
+import { Toaster } from "sonner"
+import { useUser } from "@/context/UserContext"
 
 export default function Pagamento() {
+  const { setUser, user } = useUser();
+
+  const handlePaymentSuccess = () => {
+    // Aqui você pode redirecionar para uma página de sucesso
+    // ou atualizar o estado da aplicação
+    console.log('Pagamento realizado com sucesso!');
+  };
+
+  // Fallback para garantir que nome e cpf estejam preenchidos
+  if (!user.name || !user.cpf) {
+    return (
+      <div className="flex flex-col min-h-screen">
+        <GovBrHeader />
+        <main className="flex-1 container mx-auto px-4 py-6 flex items-center justify-center">
+          <div className="bg-white rounded-lg shadow-sm p-6 max-w-md mx-auto text-center">
+            <h2 className="text-lg font-bold mb-2">Dados incompletos</h2>
+            <p className="text-gray-600">Por favor, preencha seu nome e CPF nas etapas anteriores.</p>
+            <Link href="/verificacao-cpf">
+              <Button className="mt-4">Voltar para início</Button>
+            </Link>
+          </div>
+        </main>
+        <GovBrFooter />
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col min-h-screen">
       <GovBrHeader />
+      <Toaster position="top-center" />
 
       <main className="flex-1 container mx-auto px-4 py-6">
         <div className="flex items-center text-sm mb-4 text-blue-800">
@@ -42,38 +74,28 @@ export default function Pagamento() {
           <span className="font-medium">Monjauros</span>
         </div>
 
-        <div className="bg-white rounded-lg shadow-sm p-6 max-w-md mx-auto text-center">
+        <div className="bg-white rounded-lg shadow-sm p-6 max-w-md mx-auto">
           <div className="mb-6">
             <Image src="/mounjaro-pen.png" alt="Monjaro" width={40} height={80} className="mx-auto" />
           </div>
 
-          <h2 className="text-lg font-bold mb-2">3x Canetas Monjaro (5mg)</h2>
-          <p className="text-2xl font-bold text-blue-800 mb-6">R$ 97.90</p>
+          <h2 className="text-lg font-bold mb-2 text-center">3x Canetas Monjaro (5mg)</h2>
+          <p className="text-2xl font-bold text-blue-800 mb-6 text-center">R$ 97,00</p>
 
-          <div className="mb-6">
-            <Image src="/qr-code.png" alt="QR Code PIX" width={200} height={200} className="mx-auto border p-2" />
-          </div>
+          <PixPayment
+            amount={9700}
+            customerData={{
+              name: user.name,
+              cpf: user.cpf
+            }}
+            onSuccess={handlePaymentSuccess}
+          />
 
-          <div className="mb-6">
-            <h3 className="text-sm font-medium text-gray-700 mb-2">Código PIX (Copia e Cola):</h3>
-            <div className="bg-gray-100 p-3 rounded text-xs text-gray-800 break-all mb-2">
-              00020101021226280014br.gov.bcb.pix2668qrc.pde.cillumpay.com.br/payment/5af1da83-8fa 0a2d5c0a9b1a1b
-              LTDA6M9Sao Paulo6ZM9503***
-            </div>
-            <Button className="bg-blue-600 hover:bg-blue-700 text-white w-full">Copiar Código</Button>
-          </div>
-
-          <div className="bg-red-100 text-red-800 p-2 rounded-md mb-4">Este PIX expira em: 14:50</div>
-
-          <p className="text-sm text-gray-600 mb-6">
-            Abra o aplicativo do seu banco, escolha PIX, escaneie o QR Code ou cole o código.
-          </p>
-
-          <p className="text-sm text-gray-600 mb-2">
+          <p className="text-sm text-gray-600 mt-6 text-center">
             Após o pagamento, confirmação será processada e você poderá ser notificado por e-mail ou SMS.
           </p>
 
-          <p className="text-xs text-gray-500">
+          <p className="text-xs text-gray-500 mt-2 text-center">
             Referente à sua solicitação de Monjaro (D.M. Farmácia (VVGLLC) bvsd33aa)
           </p>
         </div>

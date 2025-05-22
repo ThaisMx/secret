@@ -1,11 +1,32 @@
+"use client";
+
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Label } from "@/components/ui/label"
 import { GovBrHeader } from "@/components/gov-br-header"
 import { GovBrFooter } from "@/components/gov-br-footer"
+import { useState } from "react"
+import { useUser } from "@/context/UserContext"
+import { useRouter } from 'next/navigation'
 
 export default function VerificacaoCPF() {
+  const [selectedName, setSelectedName] = useState<string | undefined>(undefined);
+  const { setUser } = useUser();
+  const router = useRouter();
+
+  const handleContinue = () => {
+    if (selectedName) {
+      // Using the hardcoded CPF from the page content
+      setUser({ name: selectedName, cpf: "70272153656" });
+      router.push('/verificacao-data');
+    } else {
+      // Optionally, provide feedback to the user if no name is selected
+      console.log("Por favor, selecione um nome.");
+      // You could add a toast or visual indicator here
+    }
+  };
+
   return (
     <div className="flex flex-col min-h-screen">
       <GovBrHeader />
@@ -77,9 +98,9 @@ export default function VerificacaoCPF() {
 
             <p className="font-medium mb-2">Etapa 1 de 2: Qual é o seu nome completo?</p>
 
-            <RadioGroup defaultValue="option-1" className="space-y-2">
+            <RadioGroup defaultValue="option-1" className="space-y-2" onValueChange={setSelectedName}>
               <div className="border rounded-md p-3">
-                <RadioGroupItem value="option-1" id="option-1" className="peer sr-only" />
+                <RadioGroupItem value="PEDRO ALVES SILVA" id="option-1" className="peer sr-only" />
                 <Label
                   htmlFor="option-1"
                   className="flex flex-col gap-1 cursor-pointer p-2 rounded-md peer-data-[state=checked]:bg-blue-50"
@@ -88,7 +109,7 @@ export default function VerificacaoCPF() {
                 </Label>
               </div>
               <div className="border rounded-md p-3">
-                <RadioGroupItem value="option-2" id="option-2" className="peer sr-only" />
+                <RadioGroupItem value="MANUELA PEREIRA ALMEIDA" id="option-2" className="peer sr-only" />
                 <Label
                   htmlFor="option-2"
                   className="flex flex-col gap-1 cursor-pointer p-2 rounded-md peer-data-[state=checked]:bg-blue-50"
@@ -97,7 +118,7 @@ export default function VerificacaoCPF() {
                 </Label>
               </div>
               <div className="border rounded-md p-3">
-                <RadioGroupItem value="option-3" id="option-3" className="peer sr-only" />
+                <RadioGroupItem value="LAURA TEIXEIRA ALVES" id="option-3" className="peer sr-only" />
                 <Label
                   htmlFor="option-3"
                   className="flex flex-col gap-1 cursor-pointer p-2 rounded-md peer-data-[state=checked]:bg-blue-50"
@@ -106,7 +127,7 @@ export default function VerificacaoCPF() {
                 </Label>
               </div>
               <div className="border rounded-md p-3">
-                <RadioGroupItem value="option-4" id="option-4" className="peer sr-only" />
+                <RadioGroupItem value="THAIS MAXIMIANA SOARES GOMES" id="option-4" className="peer sr-only" />
                 <Label
                   htmlFor="option-4"
                   className="flex flex-col gap-1 cursor-pointer p-2 rounded-md peer-data-[state=checked]:bg-blue-50"
@@ -118,11 +139,13 @@ export default function VerificacaoCPF() {
           </div>
 
           <div className="flex justify-center">
-            <Link href="/verificacao-data">
-              <Button className="bg-blue-700 hover:bg-blue-800 text-white font-bold py-2 px-8 rounded-full">
-                Continuar
-              </Button>
-            </Link>
+            <Button
+              className="bg-blue-700 hover:bg-blue-800 text-white font-bold py-2 px-8 rounded-full"
+              onClick={handleContinue}
+              disabled={!selectedName}
+            >
+              Continuar
+            </Button>
           </div>
         </div>
       </main>
